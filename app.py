@@ -11,7 +11,7 @@ try:
     with open("hosts","r") as f:
         allowed_addresses=[host.rstrip("\n") for host in f.readlines()]
 except:
-    allowed_addresses=["127.0.0.1"]
+    allowed_addresses=[]
 print("Allowed Hosts: {}".format(allowed_addresses))
 
 login_form='''
@@ -74,12 +74,14 @@ except:
 
 @app.before_request
 def limit_remote_addr():
-    if request.remote_addr not in allowed_addresses:
+    if not allowed_addresses:
+        pass
+    elif request.remote_addr not in allowed_addresses:
         abort(403)  # Forbidden
-    print(colored("Accepting connections from the following addresses:","cyan"))
-    for a in allowed_addresses:
-        print(colored(a+ " ","red"),end="")
-    print("")
+        print(colored("Accepting connections from the following addresses:","cyan"))
+        for a in allowed_addresses:
+          print(colored(a+ " ","red"),end="")
+        print("")
 
 @app.route('/up',methods = ['GET', 'POST'])
 def upload():
