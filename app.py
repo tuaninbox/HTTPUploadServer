@@ -1,5 +1,5 @@
 import sys,os,time
-from termcolor import colored
+#from termcolor import colored
 from flask import Flask, render_template, request, abort, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
