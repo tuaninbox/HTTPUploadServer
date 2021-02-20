@@ -1,5 +1,5 @@
 import sys,os,time
-from termcolor import colored
+#from termcolor import colored
 from flask import Flask, render_template, request, abort, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
@@ -78,9 +78,10 @@ def limit_remote_addr():
         pass
     elif request.remote_addr not in allowed_addresses:
         abort(403)  # Forbidden
+        #print("Accepting connections from the following addresses:")
         print(colored("Accepting connections from the following addresses:","cyan"))
         for a in allowed_addresses:
-          print(colored(a+ " ","red"),end="")
+            print(colored(a+ " ","red"),end="")
         print("")
 
 @app.route('/up',methods = ['GET', 'POST'])
