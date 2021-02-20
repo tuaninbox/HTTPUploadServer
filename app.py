@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = "./"
 app.config['MAX_CONTENT_PATH'] = 204800 #200MB
+unlisted=[".gitignore","app.py","key","hosts","README.md","requirements",".git",".vscode","env","envwsl"]
 
 try:
     with open("hosts","r") as f:
@@ -140,18 +141,20 @@ def list(req_path=''):
             return send_file(abs_path)
         else:
             return abort(404)
+    
     files=[]
     folders=[]
     items = sorted(os.listdir(abs_path),key=lambda f: os.path.getctime("{}/{}".format(abs_path, f)), reverse=True)
     for item in items:
         #print item
         #print(os.path.join(abs_path,item))
-        if os.path.isfile(os.path.join(abs_path, item)):
-            files.append(item)
-         #   print(files)
-        else: #if os.path.isdir(os.path.join(abs_path, file)):
-            folders.append(item)
-          #  print(folders)
+        if item not in unlisted:
+            if os.path.isfile(os.path.join(abs_path, item)):
+                files.append(item)
+            #   print(files)
+            else: #if os.path.isdir(os.path.join(abs_path, file)):
+                folders.append(item)
+            #  print(folders)
 
     parent = os.path.split(req_path)
     if abs_path == base_dir:
