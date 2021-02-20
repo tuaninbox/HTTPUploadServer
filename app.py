@@ -1,5 +1,5 @@
 import sys,os,time
-#from termcolor import colored
+from termcolor import colored
 from flask import Flask, render_template, request, abort, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
@@ -7,7 +7,12 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "./"
 app.config['MAX_CONTENT_PATH'] = 204800 #200MB
 
-allowed_addresses=["115.70.122.235","172.25.16.1","203.213.121.77","152.67.110.153"]
+try:
+    with open("hosts","r") as f:
+        allowed_addresses=[host.rstrip("\n") for host in f.readlines()]
+except:
+    allowed_addresses=["127.0.0.1"]
+print("Allowed Hosts: {}".format(allowed_addresses))
 
 login_form='''
     <html>
@@ -71,10 +76,10 @@ except:
 def limit_remote_addr():
     if request.remote_addr not in allowed_addresses:
         abort(403)  # Forbidden
-    #print colored("Accepting connections from the following addresses:","cyan")
-    #for a in allowed_addresses:
-    #    print colored(a+ " ","red"),
-    #print("")
+    print(colored("Accepting connections from the following addresses:","cyan"))
+    for a in allowed_addresses:
+        print(colored(a+ " ","red"),end="")
+    print("")
 
 @app.route('/up',methods = ['GET', 'POST'])
 def upload():
