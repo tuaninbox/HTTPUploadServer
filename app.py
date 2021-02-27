@@ -124,7 +124,7 @@ def checkip():
     proxy_address = request.remote_addr
     client_ip = request.access_route
 
-    output="<html>Your IP Address: {} {} <br> Proxy Address: {}</html>".format(type(client_ip),request.remote_addr)
+    output="<html>Your IP Address: {} {} <br> Proxy Address: {}</html>".format(type(client_ip),client_ip,request.remote_addr)
     return output, 200
     #return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
