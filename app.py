@@ -121,9 +121,12 @@ def admin():
 
 @app.route('/',methods=["GET"])
 def checkip():
-    output="Current IP Address: "+request.remote_addr
-    #return output, 200
-    return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    proxy_address = request.remote_addr
+    client_ip = request.access_route[0]
+
+    output="<html>Your IP Address: {} <br> Proxy Address: {}</html>".format(client_ip,request.remote_addr)
+    return output, 200
+    #return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
 @app.route('/down', defaults={'req_path': ''})
 @app.route('/down/<path:req_path>')
