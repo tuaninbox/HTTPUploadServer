@@ -197,12 +197,12 @@ def dynroute(dynroute,req_path=''):
         timeroute=datetime.strptime(str(datetime.now().strftime("%D"))+" "+dynroute,"%m/%d/%y %H:%M:%S")
         timedelta=(timenow-timeroute)
         deltasecond=timedelta.total_seconds()
-        #print(deltasecond)
+        print(deltasecond)
     except ValueError:
         return "Invalid Link", 404
     except: 
         return "Error", 404
-    if deltasecond < 60:   
+    if abs(deltasecond) < 60:   
         route=dynroute #change this to match @app.route above
         base_dir = os.path.normpath('./')
         # Joining the base and the requested path
