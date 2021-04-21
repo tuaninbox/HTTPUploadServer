@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = "./"
 app.config['MAX_CONTENT_PATH'] = 204800 #200MB
-unlisted=[".gitignore","app.py","key","hosts","README.md","requirements",".git",".vscode","env","envwsl","oryx-manifest.toml","antenv.tar.gz",".github","__pycache__"]
+unlisted=[".gitignore","app.py","key","hosts","README.md","requirements",".git",".vscode","env","antenv","oryx-manifest.toml","antenv.tar.gz",".github","__pycache__"]
 
 try:
     with open("hosts","r") as f:
