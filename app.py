@@ -1,4 +1,5 @@
-import sys,os,time
+import sys,os
+from datetime import datetime
 #from termcolor import colored
 from flask import Flask, render_template, request, abort, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -59,6 +60,17 @@ list_content='''
     i {font-size: 6em; color: green;}
     </style>
     </head><body>
+    <script>
+        function Open(link) {
+        var d = new Date();
+        var h = d.getHours().toString();
+        var m = d.getMinutes().toString();
+        var s = d.getSeconds().toString();
+        var t = h.concat(":",m,":",s)
+        var l = t.concat("/",link)
+        window.open(l);
+        }
+        </script>
     <h2>Directory Listing:</h2>
     <hr>
     %s
@@ -119,63 +131,124 @@ def admin():
     else:
        return login_form % "adm" 
 
-@app.route('/',methods=["GET"])
+@app.route('/',methods=["GET","DELETE"])
 def checkip():
     proxy_address = request.remote_addr
     client_ip = request.access_route[0]
 
-    output="<html>Your IP Address[:Port]: {} <br> Proxy Address: {}</html>".format(client_ip,request.remote_addr)
+    #output="<html>Your IP Address[:Port]: {} <br> Proxy Address: {}</html>".format(client_ip,request.remote_addr)
+    output="<html>Your IP Address: {}</html>".format(client_ip.split(":")[0])
     return output, 200
     #return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
-@app.route('/down', defaults={'req_path': ''})
-@app.route('/down/<path:req_path>')
-def list(req_path=''):
-    route="/down/" #change this to match @app.route above
-    base_dir = os.path.normpath('./')
-    # Joining the base and the requested path
-    abs_path = os.path.normpath(os.path.join(base_dir, req_path))
-    #print(abs_path)
-    # Return 404 if path doesn't exist
-    if not os.path.exists(abs_path):
-        return abort(404)
-    if os.path.isfile(abs_path):
-        if req_path != sys.argv[0]:
-            return send_file(abs_path)
-        else:
-            return abort(404)
+# @app.route('/down', defaults={'req_path': ''})
+# @app.route('/down/<path:req_path>')
+# def list(req_path=''):
+#     route="/down/" #change this to match @app.route above
+#     base_dir = os.path.normpath('./')
+#     # Joining the base and the requested path
+#     abs_path = os.path.normpath(os.path.join(base_dir, req_path))
+#     #print(abs_path)
+#     # Return 404 if path doesn't exist
+#     if not os.path.exists(abs_path):
+#         return abort(404)
+#     if os.path.isfile(abs_path):
+#         if req_path != sys.argv[0]:
+#             return send_file(abs_path)
+#         else:
+#             return abort(404)
     
-    files=[]
-    folders=[]
-    items = sorted(os.listdir(abs_path),key=lambda f: os.path.getctime("{}/{}".format(abs_path, f)), reverse=True)
-    for item in items:
-        #print item
-        #print(os.path.join(abs_path,item))
-        if item not in unlisted:
-            if os.path.isfile(os.path.join(abs_path, item)):
-                files.append(item)
-            #   print(files)
-            else: #if os.path.isdir(os.path.join(abs_path, file)):
-                folders.append(item)
-            #  print(folders)
+#     files=[]
+#     folders=[]
+#     items = sorted(os.listdir(abs_path),key=lambda f: os.path.getctime("{}/{}".format(abs_path, f)), reverse=True)
+#     for item in items:
+#         #print item
+#         #print(os.path.join(abs_path,item))
+#         if item not in unlisted:
+#             if os.path.isfile(os.path.join(abs_path, item)):
+#                 files.append(item)
+#             #   print(files)
+#             else: #if os.path.isdir(os.path.join(abs_path, file)):
+#                 folders.append(item)
+#             #  print(folders)
 
-    parent = os.path.split(req_path)
-    if abs_path == base_dir:
-        req_path = ""
-    elif req_path[-1:] != "/":
-        req_path = req_path + "/"
+#     parent = os.path.split(req_path)
+#     if abs_path == base_dir:
+#         req_path = ""
+#     elif req_path[-1:] != "/":
+#         req_path = req_path + "/"
 
 
-    #print(files)
-    #print(folders)
-    output=""
-    for f in folders:
-        output+="<i class=\"material-icons\">folder</i><a href="+route+req_path+f+">"+f+"</a><br>"
-    for f in files:
-        if f != sys.argv[0]:
-            output+="<i class=\"material-icons\">insert_drive_file</i><a href="+route+req_path+f+">"+f+"</a><br>"
-    return list_content % output
+#     #print(files)
+#     #print(folders)
+#     output=""
+#     for f in folders:
+#         output+="<i class=\"material-icons\">folder</i><a href="+route+req_path+f+">"+f+"</a><br>"
+#     for f in files:
+#         if f != sys.argv[0]:
+#             output+="<i class=\"material-icons\">insert_drive_file</i><a href="+route+req_path+f+">"+f+"</a><br>"
+#     return list_content % output
 
+@app.route('/<dynroute>', defaults={'req_path': ''})
+@app.route('/<dynroute>/<path:req_path>')
+def dynroute(dynroute,req_path=''):
+    try:
+        timenow=datetime.now()
+        timeroute=datetime.strptime(str(datetime.now().strftime("%D"))+" "+dynroute,"%m/%d/%y %H:%M:%S")
+        timedelta=(timenow-timeroute)
+        deltasecond=timedelta.total_seconds()
+        #print(deltasecond)
+    except ValueError:
+        return "Invalid Link", 404
+    except: 
+        return "Error", 404
+    if deltasecond < 60:   
+        route=dynroute #change this to match @app.route above
+        base_dir = os.path.normpath('./')
+        # Joining the base and the requested path
+        abs_path = os.path.normpath(os.path.join(base_dir, req_path))
+        #print(abs_path)
+        # Return 404 if path doesn't exist
+        if not os.path.exists(abs_path):
+            return abort(404)
+        if os.path.isfile(abs_path):
+            if req_path != sys.argv[0]:
+                return send_file(abs_path)
+            else:
+                return abort(404)
+        
+        files=[]
+        folders=[]
+        items = sorted(os.listdir(abs_path),key=lambda f: os.path.getctime("{}/{}".format(abs_path, f)), reverse=True)
+        for item in items:
+            #print item
+            #print(os.path.join(abs_path,item))
+            if item not in unlisted:
+                if os.path.isfile(os.path.join(abs_path, item)):
+                    files.append(item)
+                #   print(files)
+                else: #if os.path.isdir(os.path.join(abs_path, file)):
+                    folders.append(item)
+                #  print(folders)
+
+        parent = os.path.split(req_path)
+        if abs_path == base_dir:
+            req_path = ""
+        elif req_path[-1:] != "/":
+            req_path = req_path + "/"
+
+
+        #print(files)
+        #print(folders)
+        output=""
+        for f in folders:
+            output+="<i class=\"material-icons\">folder</i><a href=\"javascript:Open(\'"+req_path+f+"\')\">"+f+"</a><br>"
+        for f in files:
+            if f != sys.argv[0]:
+                output+="<i class=\"material-icons\">insert_drive_file</i><a href=\"javascript:Open(\'"+req_path+f+"\')\">"+f+"</a><br>"
+        return list_content % output
+    else:
+        return "Not Found", 404
 
 @app.errorhandler(404)
 def not_found(error):
