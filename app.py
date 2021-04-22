@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 #from termcolor import colored
 from flask import Flask, render_template, request, abort, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
+from apscheduler.schedulers.background import BackgroundScheduler
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = "./"
@@ -79,11 +80,18 @@ list_content='''
     </html>
     ''' 
 
-try:
-    with open("key","r") as f:
-        key = f.read().strip()
-except:
-    key=None
+def readkey():
+    global key
+    try:
+        with open("key","r") as f:
+            key = f.read().strip()
+    except:
+        key=None
+
+readkey()
+scheduler = BackgroundScheduler()
+scheduler.add_job(readkey,'interval',minutes=1)
+scheduler.start()
 
 @app.before_request
 def limit_remote_addr():
