@@ -1,5 +1,5 @@
 import sys,os
-from datetime import datetime
+from datetime import datetime, timedelta
 #from termcolor import colored
 from flask import Flask, render_template, request, abort, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -193,14 +193,15 @@ def checkip():
 @app.route('/<dynroute>/<path:req_path>')
 def dynroute(dynroute,req_path=''):
     try:
-        timenow=datetime.now()
+        timenow=datetime.now() + timedelta(hours=8)
         timeroute=datetime.strptime(str(datetime.now().strftime("%D"))+" "+dynroute,"%m/%d/%y %H:%M:%S")
-        timedelta=(timenow-timeroute)
-        deltasecond=timedelta.total_seconds()
+        tdelta=(timenow-timeroute)
+        deltasecond=tdelta.total_seconds()
         print(deltasecond)
     except ValueError:
         return "Invalid Link", 404
-    except: 
+    except Exception as e: 
+        print(e)
         return "Error", 404
     if abs(deltasecond) < 60:   
         route=dynroute #change this to match @app.route above
@@ -212,7 +213,7 @@ def dynroute(dynroute,req_path=''):
         if not os.path.exists(abs_path):
             return abort(404)
         if os.path.isfile(abs_path):
-            if req_path != sys.argv[0]:
+            if req_path not in unlisted:
                 return send_file(abs_path)
             else:
                 return abort(404)
