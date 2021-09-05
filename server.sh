@@ -12,4 +12,5 @@ else
 	host="0.0.0.0"
 	port=80
 fi
+echo "Working directory is $FLASK_DIR"
 flask run -h $host -p $port
