@@ -22,7 +22,7 @@ def upload():
       <form action = "uploader" method = "POST" 
          enctype = "multipart/form-data">
          <input type = "file" name = "file" />
-         <input type = "submit"/>
+         <input type = "submit" name="Upload"/>
       </form>   
    </body>
    </html>'''
