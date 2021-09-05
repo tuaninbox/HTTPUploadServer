@@ -17,6 +17,9 @@ A Web Server for download and upload file
 ## Upload
 - Access http://<$IP Address of server>:<$port>/up
 
-## Upload Using CURL
+### Upload Using CURL
 - curl -X Post -F "file=@<$filename>" http://<$IP Address of server>:<$port>/uper
 - curl -F "file=@<$filename>" http://<$IP Address of server>:<$port>/uper
+
+### Upload Using Powershell
+- IEX(new-object net.webclient).uploadfile('http://<$IP Address of server>:<$port>/uper','<$file>')
