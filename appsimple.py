@@ -13,13 +13,13 @@ else:
 app.config['MAX_CONTENT_PATH'] = 204800 #200MB
   #  return app
 
-@app.route('/upload')
+@app.route('/up')
 def upload():
    #return render_template('upload.html')
    return '''
    <html>
    <body>
-      <form action = "uploader" method = "POST" 
+      <form action = "uper" method = "POST" 
          enctype = "multipart/form-data">
          <input type = "file" name = "file" />
          <input type = "submit" name="Upload"/>
@@ -27,7 +27,7 @@ def upload():
    </body>
    </html>'''
 
-@app.route('/uploader', methods = ['GET', 'POST'])
+@app.route('/uper', methods = ['GET', 'POST'])
 def upload_file():
    if request.method == 'POST':
       f = request.files['file']
